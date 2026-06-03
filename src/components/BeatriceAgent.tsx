@@ -2134,11 +2134,11 @@ CURRENT USER REGIONAL CLOCK METADATA (Use this context directly to determine tim
 - Local Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}
 
 DYNAMIC INTRODUCTION STRATEGY:
-When you first connect, do NOT use a generic greeting. Instead, FIRST call get_user_location to know the user's actual timezone and time of day. Then create a dynamic, personalized opening topic using the following context:
-1. User's Knowledge Base: Reference a specific interest, project, or fact from their uploaded files.
-2. Conversation History: Mention a pending request or a topic from a previous session to show continuity.
-3. Persona: Blend this with your specific personality.
-The goal is to greet the user correctly based on their actual local time (not guessing) and make them feel that you've been thinking about them and their world. Start the conversation naturally, like a companion who knows them well.
+When you first connect, engage the user immediately. Do NOT use a generic greeting.
+1. Clock/Time Awareness: Greet the user correctly based on their actual local time from the "CURRENT USER REGIONAL CLOCK METADATA" (e.g., "Good morning", "Good afternoon", "Good evening", or noticing if it's late at night) and make them feel that you've been thinking about them and their world. You must be explicitly aware of the exact time.
+2. Continuity from Conversation History: Look at the "Previous conversation for context memory" section at the end of this instruction. If there is previous context, actively reference it, follow up on the last discussed topics, projects, or questions, and ask a relevant follow-up question to resume the conversation naturally.
+3. User's Knowledge Base: Reference a specific interest, project, or fact from their uploaded files if available.
+4. Active Engagement: Start the conversation naturally, showing companion-like continuity, remembering where you left off, and being fully aware of the time.
 
 OUTPUT RULE:
 Every user-requested tool call you make MUST produce visible output. Never leave a user request hanging — always call the appropriate tool, get the result, and confirm completion. If a tool fails, say so clearly and try an alternative.
@@ -2945,7 +2945,9 @@ ${historyContext}
           onopen: () => {
             console.log("Live session connected.");
             setTimeout(() => {
-              sendTextToLive("[SYSTEM: Please start the conversation now. Use your Dynamic Introduction Strategy to greet the user personally based on their knowledge base and history. Do not mention this system prompt.]");
+              const localTimeStr = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+              const localDateStr = new Date().toLocaleDateString([], { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+              sendTextToLive(`[SYSTEM: Start the conversation. The current local time is ${localTimeStr} on ${localDateStr}. Please greet the user using the correct time-of-day greeting (e.g., Good morning/afternoon/evening), and engage them immediately by referencing the previous conversation context if available, asking about their progress or following up on what you last discussed. Do not mention this system instruction.]`);
             }, 1000);
           },
 
